@@ -14,21 +14,6 @@ $ yarn add react-native-anchor-carousel
 
 ### Usages
  This component currently just support only carousel for **horizontal** side carousel
-  style: ViewPropTypes.style,
-  itemWidth: PropTypes.number,
-  itemHeight: PropTypes.number,
-  separatorWidth: PropTypes.number,
-  containerWidth: PropTypes.number,
-  containerHeight: PropTypes.number,
-  itemContainerStyle: ViewPropTypes.style,
-  inActiveScale: PropTypes.number,
-  inActiveOpacity: PropTypes.number,
-  renderItem: PropTypes.func,
-  onScrollEnd: PropTypes.func,
-  onItemPress: PropTypes.func,
-  pagingEnable: PropTypes.bool,
-  initialIndex: PropTypes.number,
-  data: PropTypes.arrayOf(PropTypes.object)
  
 | Props | Description | Type | Default | Required | 
 | ------ | ------ | ------| -----| ----| 

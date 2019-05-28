@@ -50,7 +50,7 @@ __**[full example here](https://github.com/lehoangnam97/react-native-anchor-caro
     	    height: 200, 
 		} 
 	})
- 
+ ```
 
 ### Usages
  This component currently just support only carousel for **horizontal** side carousel

@@ -8,8 +8,7 @@ A simple swipeable carousel for React Native which anchor two side of list..
 ### Installation 
 Install the dependencies and devDependencies and start the server. 
 ```sh
-$ npm install react-native-anchor-carousel
-$ yarn add react-native-anchor-carousel
+$ npm install react-native-anchor-carousel 
 ```
 ### Example
 

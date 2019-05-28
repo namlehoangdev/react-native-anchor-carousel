@@ -12,7 +12,44 @@ $ npm install react-native-anchor-carousel
 $ yarn add react-native-anchor-carousel
 ```
 ###Example
-[Imgur](https://i.imgur.com/LDlucK8.gifv)
+![](https://i.imgur.com/LDlucK8.gif)
+
+
+__**[full example here](https://github.com/lehoangnam97/react-native-anchor-carousel)**__
+```
+
+ <Carousel style={styles.carousel}
+                      data={data}
+                      renderItem={this.renderItem}
+                      itemWidth={200}
+                      containerWidth={width - 20} 
+                      separatorWidth={20}
+                      ref={(c) => {
+                          this._carousel = c;
+                      }}
+					  //pagingEnable={false}
+            />
+```
+```
+  renderItem = ({item, index}) => {
+        const {backgroundColor} = item;
+        return (
+            <TouchableOpacity style={[styles.item, {backgroundColor}]}
+                              onPress={() => {
+                                  this._carousel.scrollToIndex(index);
+                              }}>
+                 .......
+            </TouchableOpacity>)
+    };
+ 
+	```
+	const styles = StyleSheet.create({ 
+		....
+	    carousel: {
+    	    height: 200, 
+		} 
+	})
+ 
 
 ### Usages
  This component currently just support only carousel for **horizontal** side carousel
@@ -25,8 +62,8 @@ $ yarn add react-native-anchor-carousel
 | onScrollEnd |  Fired while scrollview end of scrolling | Function | ()=> {} | No |
 | pagingEnable | Enable or disable autor scroll to closest item | Boolean | False | No | 
 | containerWidth | Width of the carousel container box  | number | Screen width | **Yes** | 
-| itemWidth | Width of each item in carousel | Number | 60% of screen width | **Yes** | 
-| separatorWidth| Width of separator in carousel (cause it only support horizontal side at the present time)| Number | -20 | No
+| itemWidth | Width of each item in carousel | Number | 90% of screen width | **Yes** | 
+| separatorWidth| Width of separator in carousel (cause it only support horizontal side at the present time)| Number | 10 | No
 | inActiveScale | Value of the scale effect applied to inactive item | Number | 0.85 | No | 
 | inActiveOpacity | Value of the opacity effect applied to inactive item | Number | 0.8 | No | 
 | style | Style of the carousel container box | View style | {} | No |

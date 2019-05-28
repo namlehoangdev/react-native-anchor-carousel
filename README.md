@@ -17,6 +17,11 @@ $ yarn add react-native-anchor-carousel
 
 
 __**[full example here](https://github.com/lehoangnam97/react-native-anchor-carousel)**__
+
+```javascript
+import Carousel from 'react-native-anchor-carousel';
+```
+
 ```javascript
 
  <Carousel style={styles.carousel}

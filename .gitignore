@@ -1,0 +1,5 @@
+node_modules
+
+#LOCK
+package-lock.json
+yarn.lock

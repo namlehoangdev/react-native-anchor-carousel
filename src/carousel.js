@@ -134,8 +134,6 @@ class Carousel extends Component {
         let itemContainer = [{
             ...renderedItem, props: {...renderedItem.props, style: newStyle}, key: '0'
         }];
-        console.log('-------------------------------------');
-        console.log(newStyle);
         return (
             <Animated.View
                 key={index.toString()}

@@ -1,12 +1,12 @@
 {
   "name": "react-native-anchor-carousel",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "a simple swipeable carousel which anchor two sides",
   "main": "src/index.js",
   "directories": {
     "example": "examples"
   },
-  "scripts": {
+  "scripts" : {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,12 +21,20 @@
     "carousel",
     "horizontal",
     "edge",
-    "side"
+    "side",
+    "snap",
+    "slider",
+    "component",
+    "ios",
+    "android"
   ],
   "author": "Le Hoang Nam",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/lehoangnam97/react-native-anchor-carousel/issues"
   },
-  "homepage": "https://github.com/lehoangnam97/react-native-anchor-carousel#readme"
+  "homepage": "https://github.com/lehoangnam97/react-native-anchor-carousel#readme",
+  "dependencies": {
+    "prop-types": "^15.5.10"
+  }
 }

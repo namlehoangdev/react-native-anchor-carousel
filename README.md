@@ -17,7 +17,7 @@ $ yarn add react-native-anchor-carousel
 
 
 __**[full example here](https://github.com/lehoangnam97/react-native-anchor-carousel)**__
-```
+```javascript
 
  <Carousel style={styles.carousel}
                       data={data}
@@ -28,10 +28,10 @@ __**[full example here](https://github.com/lehoangnam97/react-native-anchor-caro
                       ref={(c) => {
                           this._carousel = c;
                       }}
-					  //pagingEnable={false}
+		//pagingEnable={false}
             />
 ```
-```
+```javascript
   renderItem = ({item, index}) => {
         const {backgroundColor} = item;
         return (
@@ -43,7 +43,8 @@ __**[full example here](https://github.com/lehoangnam97/react-native-anchor-caro
             </TouchableOpacity>)
     };
  
-	```
+```
+```javascript
 	const styles = StyleSheet.create({ 
 		....
 	    carousel: {

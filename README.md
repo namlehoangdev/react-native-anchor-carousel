@@ -10,6 +10,9 @@ Install the dependencies and devDependencies and start the server.
 ```sh
 $ npm install react-native-anchor-carousel 
 ```
+```sh
+$ yarn add react-native-anchor-carousel 
+```
 ### Example
 
 ![](https://i.imgur.com/LDlucK8.gif)

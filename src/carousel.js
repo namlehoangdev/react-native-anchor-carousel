@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {
     Animated, StyleSheet, Dimensions, View, ViewPropTypes
-} from 'react-native';
+} from "react-native";
 import PropTypes from 'prop-types';
 
 const {width} = Dimensions.get('window');
@@ -201,7 +201,7 @@ Carousel.defaultProps = {
     itemWidth: 0.9 * width,
     data: [],
     style: {},
-    initialIndex: 0,
+    initialIndex: 0,d
     pagingEnable: true,
     itemContainerStyle: {},
     renderItem: () => {

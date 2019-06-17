@@ -6,7 +6,7 @@
   "directories": {
     "example": "examples"
   },
-  "scripts" : {
+  "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -36,5 +36,8 @@
   "homepage": "https://github.com/lehoangnam97/react-native-anchor-carousel#readme",
   "dependencies": {
     "prop-types": "^15.5.10"
+  },
+  "devDependencies": {
+    "prettier": "1.18.2"
   }
 }

@@ -1,21 +1,20 @@
 import React, {Component} from 'react';
-import {
-    Animated, StyleSheet, Dimensions, View, ViewPropTypes
-} from "react-native";
+import {Animated, StyleSheet, Dimensions, ViewPropTypes, FlatList} from 'react-native';
 import PropTypes from 'prop-types';
 
 const {width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {},
-    itemContainer: {flex: 1},
-    button: {width: '100%', height: '100%'}
+    itemContainer: {justifyContent: 'center'},
+    button: {}
 });
+
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 class Carousel extends Component {
     constructor(props) {
         super(props);
-        this.handleOnLayout = this.handleOnLayout.bind(this);
         this.scrollToClosestPoint = this.scrollToClosestPoint.bind(this);
         this.itemAnimatedStyles = this.itemAnimatedStyles.bind(this);
         this.renderItemContainer = this.renderItemContainer.bind(this);
@@ -37,20 +36,6 @@ class Carousel extends Component {
         }, []);
     }
 
-    handleOnLayout() {
-        const {initialIndex, containerWidth} = this.props;
-        if (
-            initialIndex &&
-            initialIndex >= 0 &&
-            initialIndex < this.itemMidPoints.length
-        ) {
-            this.scrollView.getNode().scrollTo({
-                x: this.itemMidPoints[initialIndex].value - containerWidth / 2,
-                animated: true
-            });
-        }
-    }
-
     setScrollHandler() {
         this.handleOnScroll = Animated.event(
             [{nativeEvent: {contentOffset: {x: this.xOffset}}}],
@@ -69,29 +54,39 @@ class Carousel extends Component {
         const viewportMidPosX = this.scrollX + containerWidth / 2;
         const closestPoint = this.itemMidPoints.reduce(
             (prevResult, currentItem) =>
-                Math.abs(prevResult.value - viewportMidPosX) >
-                Math.abs(currentItem.value - viewportMidPosX) ? currentItem : prevResult,
-            this.itemMidPoints[0]
+                Math.abs(prevResult.value - viewportMidPosX) > Math.abs(currentItem.value - viewportMidPosX)
+                    ? currentItem : prevResult, this.itemMidPoints[0]
         );
         onScrollEnd(closestPoint.item, closestPoint.index);
-        this.scrollView.getNode().scrollTo({
-            x: closestPoint.value - containerWidth / 2,
+        this.scrollView.getNode().scrollToOffset({
+            offset: closestPoint.value - containerWidth / 2,
             animated: true
         });
     }
 
     handleOnMomentumScrollEnd() {
-        this.scrollToClosestPoint();
+        // if (this._scrollTimeout) {
+        //     clearTimeout(this._scrollTimeout);
+        // }
+
+        // this._scrollTimeout = setTimeout(() => {
+        //     this.scrollToClosestPoint();
+        //     this._scrollTimeout = null;
+        // }, 0);
     }
 
     itemAnimatedStyles(index) {
         const {
-            data, inActiveScale, inActiveOpacity, itemWidth, separatorWidth, containerWidth
+            data,
+            inActiveScale,
+            inActiveOpacity,
+            itemWidth,
+            separatorWidth,
+            containerWidth
         } = this.props;
 
-        const animatedOffset =
-            index === 0 ? this.halfItemWidth : index === data.length - 1
-                ? containerWidth - this.halfItemWidth : this.halfContainerWidth;
+        const animatedOffset = index === 0 ? this.halfItemWidth : index === data.length - 1
+            ? containerWidth - this.halfItemWidth : this.halfContainerWidth;
         const midPoint = index * (itemWidth + separatorWidth) + this.halfItemWidth - animatedOffset;
         const startPoint = index === data.length - 1 ? midPoint - this.halfContainerWidth : midPoint - itemWidth - separatorWidth;
         const endPoint = index === 0 ? midPoint + this.halfContainerWidth : midPoint + itemWidth + separatorWidth;
@@ -116,24 +111,15 @@ class Carousel extends Component {
         return {...animatedOpacity, ...animatedScale};
     }
 
-    scrollToIndex(index) {
-        const {onScrollEnd} = this.props;
-        this.scrollView.getNode().scrollTo({
-            x: this.itemMidPoints[index].value - this.halfContainerWidth,
-            animated: true
-        });
-        onScrollEnd(index);
-    }
 
-    renderItemContainer(item, index) {
-        const {data, renderItem, itemWidth, separatorWidth, itemContainerStyle} = this.props;
-        let renderedItem = renderItem({item, index});
-        let {style = {}} = renderedItem.props;
-        let newStyle = [{width: '100%', height: '100%'}];
-        Array.isArray(newStyle) ? newStyle.push(...style) : newStyle.push(style);
-        let itemContainer = [{
-            ...renderedItem, props: {...renderedItem.props, style: newStyle}, key: '0'
-        }];
+    renderItemContainer({item, index}) {
+        const {
+            data,
+            renderItem,
+            itemWidth,
+            separatorWidth,
+            itemContainerStyle
+        } = this.props;
         return (
             <Animated.View
                 key={index.toString()}
@@ -146,31 +132,33 @@ class Carousel extends Component {
                     this.itemAnimatedStyles(index)
                 ]}
             >
-                {itemContainer}
+                {renderItem({item, index})}
             </Animated.View>
         );
     }
 
     render() {
-        const {data, style, itemWidth, containerWidth} = this.props;
+        const {data, style, itemWidth, containerWidth, initialIndex} = this.props;
         return (
-            <View style={[styles.container, {width: containerWidth}, style]}>
-                <Animated.ScrollView
-                    horizontal
-                    scrollEnabled
-                    bounces={false}
-                    decelerationRate={1}
-                    style={styles.container}
-                    snapToInterval={itemWidth}
-                    onLayout={this.handleOnLayout}
-                    showsHorizontalScrollIndicator={false}
-                    ref={(ref) => (this.scrollView = ref)}
-                    onMomentumScrollEnd={this.handleOnMomentumScrollEnd}
-                    onScroll={this.handleOnScroll}
-                >
-                    {data.map(this.renderItemContainer)}
-                </Animated.ScrollView>
-            </View>
+            <AnimatedFlatList
+                horizontal
+                //scrollEnabled
+                ref={(ref) => {
+                    this.scrollView = ref;
+                }}
+                bounces
+                automaticallyAdjustContentInsets={false}
+                decelerationRate={0}
+                style={[styles.container, {width: containerWidth}, style]}
+                snapToInterval={itemWidth}
+                showsHorizontalScrollIndicator={false}
+                initialScrollIndex={initialIndex}
+                //onScrollEndDrag={this.handleOnMomentumScrollEnd}
+                onMomentumScrollEnd={this.handleOnMomentumScrollEnd}
+                onScroll={this.handleOnScroll}
+                data={data}
+                renderItem={this.renderItemContainer}
+            />
         );
     }
 }
@@ -194,14 +182,14 @@ Carousel.propTypes = {
 };
 
 Carousel.defaultProps = {
-    inActiveScale: 0.85,
+    inActiveScale: 0.8,
     inActiveOpacity: 0.8,
-    separatorWidth: 10,
+    separatorWidth: 0,
     containerWidth: width,
     itemWidth: 0.9 * width,
     data: [],
     style: {},
-    initialIndex: 0,d
+    initialIndex: 0,
     pagingEnable: true,
     itemContainerStyle: {},
     renderItem: () => {

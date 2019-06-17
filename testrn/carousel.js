@@ -1,12 +1,5 @@
 import React, {Component} from 'react';
-import {
-    Animated,
-    StyleSheet,
-    Dimensions,
-    View,
-    ViewPropTypes,
-    FlatList
-} from 'react-native';
+import {Animated, StyleSheet, Dimensions, ViewPropTypes, FlatList} from 'react-native';
 import PropTypes from 'prop-types';
 
 const {width} = Dimensions.get('window');
@@ -62,11 +55,8 @@ class Carousel extends Component {
         const viewportMidPosX = this.scrollX + containerWidth / 2;
         const closestPoint = this.itemMidPoints.reduce(
             (prevResult, currentItem) =>
-                Math.abs(prevResult.value - viewportMidPosX) >
-                Math.abs(currentItem.value - viewportMidPosX)
-                    ? currentItem
-                    : prevResult,
-            this.itemMidPoints[0]
+                Math.abs(prevResult.value - viewportMidPosX) > Math.abs(currentItem.value - viewportMidPosX)
+                    ? currentItem : prevResult, this.itemMidPoints[0]
         );
         onScrollEnd(closestPoint.item, closestPoint.index);
         this.scrollView.getNode().scrollToOffset({
@@ -76,14 +66,14 @@ class Carousel extends Component {
     }
 
     handleOnMomentumScrollEnd() {
-        if (this._scrollTimeout) {
-            clearTimeout(this._scrollTimeout);
-        }
+        // if (this._scrollTimeout) {
+        //     clearTimeout(this._scrollTimeout);
+        // }
 
-        this._scrollTimeout = setTimeout(() => {
-            this.scrollToClosestPoint();
-            this._scrollTimeout = null;
-        }, 0);
+        // this._scrollTimeout = setTimeout(() => {
+        //     this.scrollToClosestPoint();
+        //     this._scrollTimeout = null;
+        // }, 0);
     }
 
     itemAnimatedStyles(index) {
@@ -122,14 +112,6 @@ class Carousel extends Component {
         return {...animatedOpacity, ...animatedScale};
     }
 
-    scrollToIndex(index) {
-        const {onScrollEnd} = this.props;
-        this.scrollView.getNode().scrollToOffset({
-            offset: this.itemMidPoints[index].value - this.halfContainerWidth,
-            animated: true
-        });
-        onScrollEnd(index);
-    }
 
     renderItemContainer({item, index}) {
         const {
@@ -165,7 +147,6 @@ class Carousel extends Component {
                 ref={(ref) => {
                     this.scrollView = ref;
                 }}
-                //bounces={false}
                 bounces
                 automaticallyAdjustContentInsets={false}
                 decelerationRate={0}

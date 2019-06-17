@@ -6,7 +6,7 @@ import {
     View,
     Dimensions
 } from 'react-native';
-import Carousel from './carousel';
+import Carousel from 'react-native-anchor-carousel';
 
 const {width} = Dimensions.get('window');
 

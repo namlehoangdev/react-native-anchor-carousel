@@ -9,10 +9,7 @@
   "dependencies": {
     "react": "16.6.0-alpha.8af6728",
     "react-native": "0.57.3",
-    "react-redux": "^5.0.7",
-    "redux": "^4.0.1",
-    "redux-devtools-extension": "^2.13.5",
-    "redux-thunk": "^2.3.0"
+    "react-native-anchor-carousel": "^2.1.2"
   },
   "devDependencies": {
     "babel-jest": "23.6.0",

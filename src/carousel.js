@@ -6,7 +6,7 @@ const {width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {},
-    itemContainer: {justifyContent: 'center', backgroundColor: 'white'},
+    itemContainer: {justifyContent: 'center'},
     button: {}
 });
 

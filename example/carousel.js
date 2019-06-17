@@ -34,6 +34,7 @@ class Carousel extends Component {
             result.push({value: midPositionOfItem, index, item});
             return result;
         }, []);
+        console.log('init finish');
     }
 
     setScrollHandler() {

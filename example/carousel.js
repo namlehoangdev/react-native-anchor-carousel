@@ -6,7 +6,7 @@ const {width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {},
-    itemContainer: {justifyContent: 'center'},
+    itemContainer: {justifyContent: 'center', backgroundColor: 'white'},
     button: {}
 });
 
@@ -15,6 +15,7 @@ const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 class Carousel extends Component {
     constructor(props) {
         super(props);
+        this.scrollToIndex = this.scrollToIndex.bind(this);
         this.scrollToClosestPoint = this.scrollToClosestPoint.bind(this);
         this.itemAnimatedStyles = this.itemAnimatedStyles.bind(this);
         this.renderItemContainer = this.renderItemContainer.bind(this);
@@ -30,11 +31,10 @@ class Carousel extends Component {
         this.halfItemWidth = itemWidth / 2;
         this.itemMidPoints = data.reduce((result, item, index) => {
             const midPositionOfItem =
-                index * (itemWidth + separatorWidth) + itemWidth / 2;
+                index * (itemWidth + separatorWidth) + this.halfItemWidth;
             result.push({value: midPositionOfItem, index, item});
             return result;
         }, []);
-        console.log('init finish');
     }
 
     setScrollHandler() {
@@ -50,17 +50,29 @@ class Carousel extends Component {
     }
 
     scrollToClosestPoint() {
-        const {containerWidth, onScrollEnd, pagingEnable} = this.props;
+        const {onScrollEnd, pagingEnable} = this.props;
         if (!pagingEnable) return;
-        const viewportMidPosX = this.scrollX + containerWidth / 2;
+        const viewportMidPosX = this.scrollX + this.halfContainerWidth;
         const closestPoint = this.itemMidPoints.reduce(
             (prevResult, currentItem) =>
-                Math.abs(prevResult.value - viewportMidPosX) > Math.abs(currentItem.value - viewportMidPosX)
-                    ? currentItem : prevResult, this.itemMidPoints[0]
+                Math.abs(prevResult.value - viewportMidPosX) >
+                Math.abs(currentItem.value - viewportMidPosX) ? currentItem : prevResult,
+            this.itemMidPoints[0]
         );
         onScrollEnd(closestPoint.item, closestPoint.index);
-        this.scrollView.getNode().scrollToOffset({
-            offset: closestPoint.value - containerWidth / 2,
+
+        this._scrollView.getNode().scrollToOffset({
+            offset: closestPoint.value - this.halfContainerWidth,
+            animated: true
+        });
+    }
+
+    scrollToIndex(index) {
+        const {onScrollEnd, data} = this.props;
+        if (index < 0 || index >= data.length) return;
+        onScrollEnd(data[index], index);
+        this._scrollView.getNode().scrollToOffset({
+            offset: this.itemMidPoints[index].value - this.halfContainerWidth,
             animated: true
         });
     }
@@ -69,11 +81,11 @@ class Carousel extends Component {
         // if (this._scrollTimeout) {
         //     clearTimeout(this._scrollTimeout);
         // }
-
         // this._scrollTimeout = setTimeout(() => {
         //     this.scrollToClosestPoint();
         //     this._scrollTimeout = null;
         // }, 0);
+        this.scrollToClosestPoint();
     }
 
     itemAnimatedStyles(index) {
@@ -123,7 +135,6 @@ class Carousel extends Component {
         } = this.props;
         return (
             <Animated.View
-                key={index.toString()}
                 pointerEvents={'box-none'}
                 style={[
                     styles.itemContainer,
@@ -143,11 +154,10 @@ class Carousel extends Component {
         return (
             <AnimatedFlatList
                 horizontal
+                //bounces
+                keyExtractor={(item, index) => index.toString()}
                 //scrollEnabled
-                ref={(ref) => {
-                    this.scrollView = ref;
-                }}
-                bounces
+                ref={(ref) => this._scrollView = ref}
                 automaticallyAdjustContentInsets={false}
                 decelerationRate={0}
                 style={[styles.container, {width: containerWidth}, style]}

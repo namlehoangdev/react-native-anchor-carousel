@@ -6,7 +6,7 @@ A simple swipeable carousel for React Native which anchor two side of list..
   
 
 ### Installation 
-Install the dependencies and devDependencies and start the server. 
+Install the dependency.
 ```sh
 $ npm install react-native-anchor-carousel 
 ```
@@ -25,18 +25,19 @@ import Carousel from 'react-native-anchor-carousel';
 ```
 
 ```javascript
-
- <Carousel style={styles.carousel}
-                      data={data}
-                      renderItem={this.renderItem}
-                      itemWidth={200}
-                      containerWidth={width - 20} 
-                      separatorWidth={20}
-                      ref={(c) => {
-                          this._carousel = c;
-                      }}
-		//pagingEnable={false}
+<View style={styles.carouselContainer}>
+     <Carousel  style={styles.carousel}
+                data={data}
+                renderItem={this.renderItem}
+                itemWidth={200}
+                containerWidth={width - 20} 
+                separatorWidth={20}
+                ref={(c) => {
+                    this._carousel = c;
+                }}
+	            //pagingEnable={false}
             />
+</View>
 ```
 ```javascript
   renderItem = ({item, index}) => {
@@ -54,14 +55,18 @@ import Carousel from 'react-native-anchor-carousel';
 ```javascript
 	const styles = StyleSheet.create({ 
 		....
+		carouselContainer: {
+		    height:200  
+		},
 	    carousel: {
-    	    height: 200, 
+	        flex:1
 		} 
 	})
  ```
 
 ### Usages
  This component currently just support only carousel for **horizontal** side carousel
+ In version **2.2.0**, It is now supported __**[Flatlist](https://facebook.github.io/react-native/docs/flatlist)**__ props
  
 | Props | Description | Type | Default | Required | 
 | ------ | ------ | ------| -----| ----| 

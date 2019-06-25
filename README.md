@@ -35,7 +35,7 @@ import Carousel from 'react-native-anchor-carousel';
                 ref={(c) => {
                     this._carousel = c;
                 }}
-	            //pagingEnable={false}
+	        //pagingEnable={false}
             />
 </View>
 ```
@@ -58,8 +58,8 @@ import Carousel from 'react-native-anchor-carousel';
 		carouselContainer: {
 		    height:200  
 		},
-	    carousel: {
-	        flex:1
+	    	carousel: {
+	            flex:1
 		} 
 	})
  ```

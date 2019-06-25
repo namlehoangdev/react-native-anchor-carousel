@@ -129,10 +129,13 @@ class Carousel extends Component {
         const {
             data,
             renderItem,
+            inverted,
             itemWidth,
             separatorWidth,
             itemContainerStyle
         } = this.props;
+        let marginWidth = index !== data.length - 1 ? separatorWidth : 0;
+        let marginStyle = !!inverted ? {marginLeft: marginWidth} : {marginRight: marginWidth}
         return (
             <Animated.View
                 pointerEvents={'box-none'}
@@ -140,7 +143,7 @@ class Carousel extends Component {
                     styles.itemContainer,
                     itemContainerStyle,
                     {width: itemWidth},
-                    index === data.length - 1 ? {} : {marginRight: separatorWidth},
+                    marginStyle,
                     this.itemAnimatedStyles(index)
                 ]}
             >
@@ -150,9 +153,10 @@ class Carousel extends Component {
     }
 
     render() {
-        const {data, style, itemWidth, containerWidth, initialIndex} = this.props;
+        const {data, style, itemWidth, containerWidth, initialIndex, ...otherProps} = this.props;
         return (
             <AnimatedFlatList
+                {...otherProps}
                 horizontal
                 //bounces
                 keyExtractor={(item, index) => index.toString()}

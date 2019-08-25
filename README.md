@@ -15,6 +15,8 @@ $ yarn add react-native-anchor-carousel
 ```
 ### Example
 
+__**[Expo snack demo here](https://github.com/lehoangnam97/react-native-anchor-carousel)**__
+
 ![](https://i.imgur.com/wd1lxyt.gif) 
 
 ![](https://i.imgur.com/r0Pn9y4.gif)  
@@ -68,8 +70,8 @@ import Carousel from 'react-native-anchor-carousel';
 
 ### Usages
  This component currently just support only carousel for **horizontal** side carousel
- In version **2.2.0**, It is now supported __**[Flatlist](https://facebook.github.io/react-native/docs/flatlist)**__ props
- In version **3.0.0** Change scroll behavior of previous versions
+ From version **2.2.0**, It is now supported __**[Flatlist](https://facebook.github.io/react-native/docs/flatlist)**__ props
+ From version **3.0.0** Change scroll behavior of previous versions
  
 | Props | Description | Type | Default | Required | 
 | ------ | ------ | ------| -----| ----| 

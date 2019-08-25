@@ -19,6 +19,9 @@ __**[Expo snack demo here](https://github.com/lehoangnam97/react-native-anchor-c
 
 ![](https://i.imgur.com/wd1lxyt.gif) 
 
+
+
+
 ![](https://i.imgur.com/r0Pn9y4.gif)  
  
 __**[full example here](https://github.com/lehoangnam97/react-native-anchor-carousel)**__

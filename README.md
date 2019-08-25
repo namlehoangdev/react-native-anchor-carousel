@@ -15,9 +15,10 @@ $ yarn add react-native-anchor-carousel
 ```
 ### Example
 
-![](https://i.imgur.com/LDlucK8.gif)
+![](https://i.imgur.com/wd1lxyt.gif) 
 
-
+![](https://i.imgur.com/r0Pn9y4.gif)  
+ 
 __**[full example here](https://github.com/lehoangnam97/react-native-anchor-carousel)**__
 
 ```javascript
@@ -31,11 +32,12 @@ import Carousel from 'react-native-anchor-carousel';
                 renderItem={this.renderItem}
                 itemWidth={200}
                 containerWidth={width - 20} 
-                separatorWidth={20}
+                separatorWidth={0}
                 ref={(c) => {
                     this._carousel = c;
                 }}
-	        //pagingEnable={false}
+	            //pagingEnable={false}
+	            //minScrollDistance={20}
             />
 </View>
 ```
@@ -67,6 +69,7 @@ import Carousel from 'react-native-anchor-carousel';
 ### Usages
  This component currently just support only carousel for **horizontal** side carousel
  In version **2.2.0**, It is now supported __**[Flatlist](https://facebook.github.io/react-native/docs/flatlist)**__ props
+ In version **3.0.0** Change scroll behavior of previous versions
  
 | Props | Description | Type | Default | Required | 
 | ------ | ------ | ------| -----| ----| 
@@ -82,6 +85,7 @@ import Carousel from 'react-native-anchor-carousel';
 | inActiveOpacity | Value of the opacity effect applied to inactive item | Number | 0.8 | No | 
 | style | Style of the carousel container box | View style | {} | No |
 | itemContainerStyle | Style for each carousel container item | View style | {} | No |
+| minScrollDistance | Minimum distance when scrolling to move to the next item | Number | 25 | No |
  
 ### References from
 This library is written after taking reference from [react-native-snap-carousel](https://github.com/archriss/react-native-snap-carousel)

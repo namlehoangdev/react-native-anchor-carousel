@@ -59,8 +59,7 @@ class Carousel extends Component {
   }
 
   scrollToClosestPoint() {
-    const { onScrollEnd, pagingEnable } = this.props;
-    if (!pagingEnable) return;
+    const { onScrollEnd } = this.props; 
     const viewportMidPosX = this.scrollX + this.halfContainerWidth;
     const closestPoint = this.itemMidPoints.reduce(
       (prevResult, currentItem) =>
@@ -96,11 +95,10 @@ class Carousel extends Component {
   }
   l;
   handleOnScrollEndDrag() {
-    const { minScrollDistance, onScrollEndDrag } = this.props;
+    const { minScrollDistance, onScrollEndDrag, pagingEnable } = this.props;
+    if (!pagingEnable) return;
     onScrollEndDrag && onScrollEndDrag();
-    if (this.scrollX < 0) {
-      return;
-    }
+    if (this.scrollX < 0) return;
     let scrollDistance = this.scrollX - this.scrollXBegin;
     this.scrollXBegin = 0;
     if (Math.abs(scrollDistance) < minScrollDistance) {

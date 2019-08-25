@@ -1,80 +1,50 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-    Dimensions
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Dimensions,
+  ImageBackground, 
 } from 'react-native';
-import Carousel from 'react-native-anchor-carousel';
+import NumberCarousel from './NumberCarousel';
+import ImageCarousel from './ImageCarousel';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window'); 
 
-const data = [
-    {backgroundColor: 'red'},
-    {backgroundColor: 'green'},
-    {backgroundColor: 'blue'},
-    {backgroundColor: 'yellow'}
-];
+export default class App extends Component { 
+  render() {
+    return (
+      <View style={styles.container}>
+        <View style={styles.carouselContainer}>
+          <NumberCarousel/>
+        </View> 
+        <View style={styles.carouselContainer2}>
+          <ImageCarousel/>
+          
+        </View>
+        
+      </View>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: 'black'
-    },
-    carouselContainer: {
-        height: 200,
-        width: width,
-        borderWidth: 5,
-        borderColor: 'white',
-    },
-    carousel: {
-        flex: 1,
-        backgroundColor: 'orange'
-    },
-    item: {
-        borderWidth: 2,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    text: {
-        fontSize: 100,
-        fontWeight: 'bold'
-    }
+  container: {
+    flex:1,
+    backgroundColor: '#2C2F34', 
+    marginTop:20
+  },
+  carouselContainer: {
+    height: 150,
+    width: width,
+    borderWidth: 5,
+    borderColor: 'white',
+    marginTop:10
+  },
+  carouselContainer2: { 
+    width: width,
+    height:width*0.8, 
+    marginTop:10
+  }, 
 });
-
-export default class App extends Component {
-    renderItem = ({item, index}) => {
-        const {backgroundColor} = item;
-        return (
-            <TouchableOpacity
-                style={[styles.item, {backgroundColor}]}
-                onPress={() => {
-                    this._carousel.scrollToIndex(index);
-                }}
-            >
-                <Text style={styles.text}>{index.toString()}</Text>
-            </TouchableOpacity>
-        );
-    };
-
-    render() {
-        return (
-            <View style={styles.container}>
-                <View style={styles.carouselContainer}>
-                    <Carousel
-                        style={styles.carousel}
-                        data={data}
-                        renderItem={this.renderItem}
-                        itemWidth={250}
-                        containerWidth={width}
-                        //pagingEnable={false}
-                        separatorWidth={20}
-                        ref={(c) => {
-                            this._carousel = c;
-                        }}
-                    />
-                </View>
-            </View>
-        );
-    }
-}

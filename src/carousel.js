@@ -165,11 +165,11 @@ class Carousel extends Component {
                 automaticallyAdjustContentInsets={false}
                 decelerationRate={0}
                 style={[styles.container, {width: containerWidth}, style]}
-                snapToInterval={itemWidth}
+                //snapToInterval={itemWidth}
                 showsHorizontalScrollIndicator={false}
                 initialScrollIndex={initialIndex}
-                //onScrollEndDrag={this.handleOnMomentumScrollEnd}
-                onMomentumScrollEnd={this.handleOnMomentumScrollEnd}
+                onScrollEndDrag={this.handleOnMomentumScrollEnd}
+                //onMomentumScrollEnd={this.handleOnMomentumScrollEnd}
                 onScroll={this.handleOnScroll}
                 data={data}
                 renderItem={this.renderItemContainer}

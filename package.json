@@ -1,6 +1,6 @@
 {
   "name": "react-native-anchor-carousel",
-  "version": "2.2.0",
+  "version": "2.3.1",
   "description": "a simple swipeable carousel which anchor two sides",
   "main": "src/index.js",
   "directories": {

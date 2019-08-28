@@ -22,7 +22,6 @@ class Carousel extends Component {
   constructor(props) {
     super(props);
     this.scrollToIndex = this.scrollToIndex.bind(this);
-    this.scrollToClosestPoint = this.scrollToClosestPoint.bind(this);
     this.itemAnimatedStyles = this.itemAnimatedStyles.bind(this);
     this.renderItemContainer = this.renderItemContainer.bind(this);
     this.handleOnScrollBeginDrag = this.handleOnScrollBeginDrag.bind(this);
@@ -32,18 +31,18 @@ class Carousel extends Component {
   }
 
   initialize() {
-    const { itemWidth, separatorWidth, data, containerWidth, initialIndex } = this.props;
+    const {
+      itemWidth,
+      separatorWidth,
+      data,
+      containerWidth,
+      initialIndex
+    } = this.props;
     this.currentIndex = initialIndex;
     this.scrollXBegin = 0;
     this.xOffset = new Animated.Value(0);
     this.halfContainerWidth = containerWidth / 2;
     this.halfItemWidth = itemWidth / 2;
-    this.itemMidPoints = data.reduce((result, item, index) => {
-      const midPositionOfItem =
-        index * (itemWidth + separatorWidth) + this.halfItemWidth;
-      result.push({ value: midPositionOfItem, index, item });
-      return result;
-    }, []);
   }
 
   setScrollHandler() {
@@ -58,33 +57,16 @@ class Carousel extends Component {
     );
   }
 
-  scrollToClosestPoint() {
-    const { onScrollEnd } = this.props; 
-    const viewportMidPosX = this.scrollX + this.halfContainerWidth;
-    const closestPoint = this.itemMidPoints.reduce(
-      (prevResult, currentItem) =>
-        Math.abs(prevResult.value - viewportMidPosX) >
-        Math.abs(currentItem.value - viewportMidPosX)
-          ? currentItem
-          : prevResult,
-      this.itemMidPoints[0]
-    );
-    this.currentIndex = closestPoint.index;
-    onScrollEnd(closestPoint.item, closestPoint.index);
-
-    this._scrollView.getNode().scrollToOffset({
-      offset: closestPoint.value - this.halfContainerWidth,
-      animated: true
-    });
-  }
-
   scrollToIndex(index) {
-    const { onScrollEnd, data } = this.props;
+    const { onScrollEnd, data, itemWidth, separatorWidth } = this.props;
     if (index < 0 || index >= data.length) return;
     onScrollEnd(data[index], index);
     this.currentIndex = index;
     this._scrollView.getNode().scrollToOffset({
-      offset: this.itemMidPoints[index].value - this.halfContainerWidth,
+      offset:
+        index * (itemWidth + separatorWidth) +
+        this.halfItemWidth -
+        this.halfContainerWidth,
       animated: true
     });
   }
@@ -95,14 +77,15 @@ class Carousel extends Component {
   }
   l;
   handleOnScrollEndDrag() {
-    const { minScrollDistance, onScrollEndDrag, pagingEnable } = this.props;
-    if (!pagingEnable) return;
+    const { minScrollDistance, onScrollEndDrag } = this.props;
     onScrollEndDrag && onScrollEndDrag();
-    if (this.scrollX < 0) return;
+    if (this.scrollX < 0) {
+      return;
+    }
     let scrollDistance = this.scrollX - this.scrollXBegin;
     this.scrollXBegin = 0;
     if (Math.abs(scrollDistance) < minScrollDistance) {
-      this.scrollToClosestPoint();
+      this.scrollToIndex(this.currentIndex);
       return;
     }
     scrollDistance < 0
@@ -119,15 +102,34 @@ class Carousel extends Component {
       separatorWidth,
       containerWidth
     } = this.props;
-    const animatedOffset = index === 0 ? this.halfItemWidth
-        : index === data.length - 1 ? containerWidth - this.halfItemWidth
+    const animatedOffset =
+      index === 0
+        ? this.halfItemWidth
+        : index === data.length - 1
+        ? containerWidth - this.halfItemWidth
         : this.halfContainerWidth;
-    const midPoint = index * (itemWidth + separatorWidth) + this.halfItemWidth - animatedOffset;
-    const startPoint = index === 1 ? 0 
-        : index === data.length - 1 ? (data.length - 2) * (itemWidth + separatorWidth) + this.halfItemWidth - this.halfContainerWidth
+    const midPoint =
+      index * (itemWidth + separatorWidth) +
+      this.halfItemWidth -
+      animatedOffset;
+    const startPoint =
+      index === 1
+        ? 0
+        : index === data.length - 1
+        ? (data.length - 2) * (itemWidth + separatorWidth) +
+          this.halfItemWidth -
+          this.halfContainerWidth
         : midPoint - itemWidth - separatorWidth;
-    const endPoint = index === 0 ? itemWidth + separatorWidth + this.halfItemWidth - this.halfContainerWidth
-        : index === data.length - 2 ? (data.length - 1) * (itemWidth + separatorWidth) + itemWidth - containerWidth
+    const endPoint =
+      index === 0
+        ? itemWidth +
+          separatorWidth +
+          this.halfItemWidth -
+          this.halfContainerWidth
+        : index === data.length - 2
+        ? (data.length - 1) * (itemWidth + separatorWidth) +
+          itemWidth -
+          containerWidth
         : midPoint + itemWidth + separatorWidth;
 
     const animatedOpacity = {
@@ -152,9 +154,18 @@ class Carousel extends Component {
   }
 
   renderItemContainer({ item, index }) {
-    const { data, renderItem, inverted, itemWidth, separatorWidth, itemContainerStyle } = this.props;
+    const {
+      data,
+      renderItem,
+      inverted,
+      itemWidth,
+      separatorWidth,
+      itemContainerStyle
+    } = this.props;
     let marginWidth = index !== data.length - 1 ? separatorWidth : 0;
-    let marginStyle = !!inverted ? { marginLeft: marginWidth } : { marginRight: marginWidth };
+    let marginStyle = !!inverted
+      ? { marginLeft: marginWidth }
+      : { marginRight: marginWidth };
     return (
       <Animated.View
         pointerEvents={'box-none'}
@@ -172,7 +183,15 @@ class Carousel extends Component {
   }
 
   render() {
-    const { data, bounces, style, itemWidth, containerWidth, initialIndex, ...otherProps } = this.props;
+    const {
+      data,
+      bounces,
+      style,
+      itemWidth,
+      containerWidth,
+      initialIndex,
+      ...otherProps
+    } = this.props;
     return (
       <AnimatedFlatList
         {...otherProps}

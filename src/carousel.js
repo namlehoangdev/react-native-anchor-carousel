@@ -26,6 +26,7 @@ class Carousel extends Component {
     this.renderItemContainer = this.renderItemContainer.bind(this);
     this.handleOnScrollBeginDrag = this.handleOnScrollBeginDrag.bind(this);
     this.handleOnScrollEndDrag = this.handleOnScrollEndDrag.bind(this);
+    this.getItemLayout = this.getItemLayout.bind(this);
     this.initialize();
     this.setScrollHandler();
   }
@@ -62,12 +63,14 @@ class Carousel extends Component {
     if (index < 0 || index >= data.length) return;
     onScrollEnd(data[index], index);
     this.currentIndex = index;
-    this._scrollView.getNode().scrollToOffset({
-      offset:
-        index * (itemWidth + separatorWidth) +
-        this.halfItemWidth -
-        this.halfContainerWidth,
-      animated: true
+    setTimeout(() => {
+      this._scrollView.getNode().scrollToOffset({
+        offset:
+          index * (itemWidth + separatorWidth) +
+          this.halfItemWidth -
+          this.halfContainerWidth,
+        animated: true
+      });
     });
   }
   handleOnScrollBeginDrag() {
@@ -181,6 +184,16 @@ class Carousel extends Component {
       </Animated.View>
     );
   }
+  getItemLayout(data, index) {
+    const {itemWidth,separatorWidth}=this.props;
+    return {
+      offset:index * (itemWidth + separatorWidth) +
+          this.halfItemWidth -
+          this.halfContainerWidth,
+      length: itemWidth,
+      index
+    };
+  }
 
   render() {
     const {
@@ -209,6 +222,7 @@ class Carousel extends Component {
         onScrollBeginDrag={this.handleOnScrollBeginDrag}
         onScroll={this.handleOnScroll}
         onScrollEndDrag={this.handleOnScrollEndDrag}
+        getItemLayout={this.getItemLayout}
         //scrollEnabled//snapToInterval={itemWidth}
       />
     );

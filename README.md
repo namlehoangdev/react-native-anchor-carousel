@@ -21,7 +21,56 @@ __**[Expo snack demo here](https://snack.expo.io/@lehoangnamuit/react-native-anc
 ![](https://i.imgur.com/wd1lxyt.gif) 
  
 __**[full example here](https://github.com/lehoangnam97/react-native-anchor-carousel)**__
+**Hook Component version:
+```javascript
+import React, {useRef} from 'react';
+import Carousel from 'react-native-anchor-carousel';
+```
 
+```javascript
+const carouselRef = useRef(null);
+
+```
+
+```javascript
+<View style={styles.carouselContainer}>
+     <Carousel  style={styles.carousel}
+                data={data}
+                renderItem={this.renderItem}
+                itemWidth={200}
+                containerWidth={width - 20} 
+                separatorWidth={0}
+                ref={carouselRef}
+	            //pagingEnable={false}
+	            //minScrollDistance={20}
+            />
+</View>
+```
+```javascript
+  renderItem = ({item, index}) => {
+        const {backgroundColor} = item;
+        return (
+            <TouchableOpacity style={[styles.item, {backgroundColor}]}
+                              onPress={() => { carouselRef.current.scrollToIndex(index); }}>
+                 .......
+            </TouchableOpacity>)
+    };
+ 
+```
+```javascript
+	const styles = StyleSheet.create({ 
+		....
+		carouselContainer: {
+		    height:200  
+		},
+	    	carousel: {
+	            flex:1
+		} 
+	})
+ ```
+
+
+**Traditional component version:
 ```javascript
 import Carousel from 'react-native-anchor-carousel';
 ```

@@ -203,6 +203,7 @@ class Carousel extends Component {
       itemWidth,
       containerWidth,
       initialIndex,
+      keyExtractor,
       ...otherProps
     } = this.props;
     return (
@@ -213,7 +214,7 @@ class Carousel extends Component {
         data={data}
         decelerationRate={0}
         automaticallyAdjustContentInsets={false}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={keyExtractor}
         ref={(ref) => (this._scrollView = ref)}
         renderItem={this.renderItemContainer}
         style={[styles.container, { width: containerWidth }, style]}
@@ -238,6 +239,7 @@ Carousel.propTypes = {
   itemContainerStyle: ViewPropTypes.style,
   inActiveScale: PropTypes.number,
   inActiveOpacity: PropTypes.number,
+  keyExtractor: PropTypes.func,
   renderItem: PropTypes.func,
   onScrollEnd: PropTypes.func,
   pagingEnable: PropTypes.bool,
@@ -263,6 +265,7 @@ Carousel.defaultProps = {
   pagingEnable: true,
   minScrollDistance: 25,
   itemContainerStyle: {},
+  keyExtractor: (item, index) => index.toString(),
   renderItem: () => {},
   onScrollEnd: () => {},
   onScrollBeginDrag: () => {},

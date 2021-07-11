@@ -134,7 +134,6 @@ function Carousel(props, ref) {
   }
 
   function getItemTotalMarginBothSide() {
-    const halfSeparatorWidth = separatorWidth / 2;
     const compensatorOfSeparatorByScaleEffect = (1 - inActiveScale) * itemWidth;
     return separatorWidth - compensatorOfSeparatorByScaleEffect / 2;
   }

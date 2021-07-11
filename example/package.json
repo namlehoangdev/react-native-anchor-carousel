@@ -12,7 +12,7 @@
   "dependencies": {
     "react": "17.0.1",
     "react-native": "0.64.2",
-    "react-native-anchor-carousel": "^3.1.2"
+    "react-native-anchor-carousel": "^4.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",

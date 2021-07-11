@@ -1,174 +1,238 @@
-import React, { Component } from 'react';
-import {
-  Animated,
-  StyleSheet,
-  Dimensions,
-  ViewPropTypes,
-  FlatList
-} from 'react-native';
-import PropTypes from 'prop-types';
+import React, {
+  Component,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+  forwardRef
+} from 'react';
+import { Animated, StyleSheet, Dimensions, FlatList } from 'react-native';
 
-const { width } = Dimensions.get('window');
+const { width: windowWidth } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {},
-  itemContainer: { justifyContent: 'center' },
-  button: {}
+  itemContainer: { justifyContent: 'center' }
 });
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
-class Carousel extends Component {
-  constructor(props) {
-    super(props);
-    this.scrollToIndex = this.scrollToIndex.bind(this);
-    this.itemAnimatedStyles = this.itemAnimatedStyles.bind(this);
-    this.renderItemContainer = this.renderItemContainer.bind(this);
-    this.handleOnScrollBeginDrag = this.handleOnScrollBeginDrag.bind(this);
-    this.handleOnScrollEndDrag = this.handleOnScrollEndDrag.bind(this);
-    this.getItemLayout = this.getItemLayout.bind(this);
-    this.initialize();
-    this.setScrollHandler();
+function useConstructor(callBack = () => {}) {
+  const [hasBeenCalled, setHasBeenCalled] = useState(false);
+  if (hasBeenCalled) {
+    return;
+  }
+  callBack();
+  setHasBeenCalled(true);
+}
+
+function Carousel(props, ref) {
+  const {
+    data = [],
+    style = {},
+    containerWidth = windowWidth,
+    itemWidth = 0.9 * windowWidth,
+    itemContainerStyle = {},
+    separatorWidth = 10,
+    minScrollDistance = 5,
+    inActiveScale = 0.8,
+    inActiveOpacity = 0.8,
+    inverted = false,
+    initialIndex = 0,
+    bounces = true,
+    showsHorizontalScrollIndicator = false,
+    keyExtractor = (item, index) => index.toString(),
+    renderItem = () => {},
+    onScrollEnd = () => {},
+    onScrollBeginDrag = () => {},
+    onScrollEndDrag = () => {},
+    ...otherProps
+  } = props;
+  const scrollViewRef = useRef(null);
+  const currentIndexRef = useRef(initialIndex);
+  const scrollXRef = useRef(0);
+  const scrollXBeginRef = useRef(0);
+  const xOffsetRef = useRef(new Animated.Value(0));
+  const handleOnScrollRef = useRef(() => {});
+  const halfContainerWidth = containerWidth / 2;
+  const halfItemWidth = itemWidth / 2;
+  const itemTotalMarginBothSide = getItemTotalMarginBothSide();
+  const containerStyle = [styles.container, { width: containerWidth }, style];
+  const dataLength = data ? data.length : 0;
+
+  useConstructor(() => {
+    setScrollHandler();
+  });
+
+  useImperativeHandle(ref, () => ({
+    scrollToIndex: scrollToIndex
+  }));
+
+  function isLastItem(index) {
+    return index === dataLength - 1;
   }
 
-  initialize() {
-    const {
-      itemWidth,
-      separatorWidth,
-      data,
-      containerWidth,
-      initialIndex
-    } = this.props;
-    this.currentIndex = initialIndex;
-    this.scrollXBegin = 0;
-    this.xOffset = new Animated.Value(0);
-    this.halfContainerWidth = containerWidth / 2;
-    this.halfItemWidth = itemWidth / 2;
+  function isFirstItem(index) {
+    return index === 0;
   }
 
-  setScrollHandler() {
-    this.handleOnScroll = Animated.event(
-      [{ nativeEvent: { contentOffset: { x: this.xOffset } } }],
+  function getItemLayout(data, index) {
+    return {
+      offset: getItemOffset(index),
+      length: itemWidth,
+      index
+    };
+  }
+
+  function setScrollHandler() {
+    handleOnScrollRef.current = Animated.event(
+      [{ nativeEvent: { contentOffset: { x: xOffsetRef.current } } }],
       {
         useNativeDriver: true,
-        listener: (event) => {
-          this.scrollX = event.nativeEvent.contentOffset.x;
+        listener: event => {
+          scrollXRef.current = event.nativeEvent.contentOffset.x;
         }
       }
     );
   }
 
-  scrollToIndex(index) {
-    const { onScrollEnd, data, itemWidth, separatorWidth } = this.props;
-    if (index < 0 || index >= data.length) return;
-    onScrollEnd(data[index], index);
-    this.currentIndex = index;
+  function scrollToIndex(index) {
+    if (index < 0 || index >= dataLength) {
+      return;
+    }
+    onScrollEnd && onScrollEnd(data[index], index);
+    currentIndexRef.current = index;
     setTimeout(() => {
-      this._scrollView.getNode().scrollToOffset({
-        offset:
-          index * (itemWidth + separatorWidth) +
-          this.halfItemWidth -
-          this.halfContainerWidth,
-        animated: true
-      });
+      scrollViewRef.current &&
+        scrollViewRef.current.scrollToOffset({
+          offset: getItemOffset(index),
+          animated: true
+        });
     });
   }
-  handleOnScrollBeginDrag() {
-    const { onScrollBeginDrag } = this.props;
+
+  function handleOnScrollBeginDrag() {
     onScrollBeginDrag && onScrollBeginDrag();
-    this.scrollXBegin = this.scrollX;
+    scrollXBeginRef.current = scrollXRef.current;
   }
-  l;
-  handleOnScrollEndDrag() {
-    const { minScrollDistance, onScrollEndDrag } = this.props;
+
+  function handleOnScrollEndDrag() {
     onScrollEndDrag && onScrollEndDrag();
-    if (this.scrollX < 0) {
+    if (scrollXRef.current < 0) {
       return;
     }
-    let scrollDistance = this.scrollX - this.scrollXBegin;
-    this.scrollXBegin = 0;
+    const scrollDistance = scrollXRef.current - scrollXBeginRef.current;
+    scrollXBeginRef.current = 0;
     if (Math.abs(scrollDistance) < minScrollDistance) {
-      this.scrollToIndex(this.currentIndex);
+      scrollToIndex(currentIndexRef.current);
       return;
     }
-    scrollDistance < 0
-      ? this.scrollToIndex(this.currentIndex - 1)
-      : this.scrollToIndex(this.currentIndex + 1);
+    if (scrollDistance < 0) {
+      scrollToIndex(currentIndexRef.current - 1);
+    } else {
+      scrollToIndex(currentIndexRef.current + 1);
+    }
   }
 
-  itemAnimatedStyles(index) {
-    const {
-      data,
-      inActiveScale,
-      inActiveOpacity,
-      itemWidth,
-      separatorWidth,
-      containerWidth
-    } = this.props;
-    const animatedOffset =
-      index === 0
-        ? this.halfItemWidth
-        : index === data.length - 1
-        ? containerWidth - this.halfItemWidth
-        : this.halfContainerWidth;
-    const midPoint =
-      index * (itemWidth + separatorWidth) +
-      this.halfItemWidth -
-      animatedOffset;
-    const startPoint =
-      index === 1
-        ? 0
-        : index === data.length - 1
-        ? (data.length - 2) * (itemWidth + separatorWidth) +
-          this.halfItemWidth -
-          this.halfContainerWidth
-        : midPoint - itemWidth - separatorWidth;
-    const endPoint =
-      index === 0
-        ? itemWidth +
-          separatorWidth +
-          this.halfItemWidth -
-          this.halfContainerWidth
-        : index === data.length - 2
-        ? (data.length - 1) * (itemWidth + separatorWidth) +
-          itemWidth -
-          containerWidth
-        : midPoint + itemWidth + separatorWidth;
+  function getItemTotalMarginBothSide() {
+    const compensatorOfSeparatorByScaleEffect = (1 - inActiveScale) * itemWidth;
+    return separatorWidth - compensatorOfSeparatorByScaleEffect / 2;
+  }
 
+  function getItemOffset(index) {
+    return (
+      index * (itemWidth + itemTotalMarginBothSide) -
+      (halfContainerWidth - halfItemWidth)
+    );
+  }
+
+  function getAnimatedOffset(index) {
+    if (isFirstItem(index)) {
+      return halfItemWidth;
+    }
+    if (isLastItem(index)) {
+      return containerWidth - halfItemWidth;
+    }
+    return halfContainerWidth;
+  }
+
+  function getMidPontInterpolate(index, animatedOffset) {
+    return (
+      index * (itemWidth + itemTotalMarginBothSide) +
+      halfItemWidth -
+      animatedOffset
+    );
+  }
+  function getStartPontInterpolate(index, midPoint) {
+    if (index === 1) {
+      return 0;
+    }
+    if (isLastItem(index)) {
+      return (
+        (dataLength - 2) * (itemWidth + itemTotalMarginBothSide) +
+        halfItemWidth -
+        halfContainerWidth
+      );
+    }
+    return midPoint - itemWidth - itemTotalMarginBothSide;
+  }
+
+  function getEndPointInterpolate(index, midPoint) {
+    if (isFirstItem(index)) {
+      return (
+        itemWidth + itemTotalMarginBothSide + halfItemWidth - halfContainerWidth
+      );
+    }
+    if (index === dataLength - 2) {
+      return (
+        (dataLength - 1) * (itemWidth + itemTotalMarginBothSide) +
+        itemWidth -
+        containerWidth
+      );
+    }
+    return midPoint + itemWidth + itemTotalMarginBothSide;
+  }
+
+  function getItemAnimatedStyle(index) {
+    const animatedOffset = getAnimatedOffset(index);
+    const midPoint = getMidPontInterpolate(index, animatedOffset);
+    const startPoint = getStartPontInterpolate(index, midPoint);
+    const endPoint = getEndPointInterpolate(index, midPoint);
     const animatedOpacity = {
-      opacity: this.xOffset.interpolate({
+      opacity: xOffsetRef.current.interpolate({
         inputRange: [startPoint, midPoint, endPoint],
         outputRange: [inActiveOpacity, 1, inActiveOpacity]
       })
     };
-
     const animatedScale = {
       transform: [
         {
-          scale: this.xOffset.interpolate({
+          scale: xOffsetRef.current.interpolate({
             inputRange: [startPoint, midPoint, endPoint],
             outputRange: [inActiveScale, 1, inActiveScale]
           })
         }
       ]
     };
-
     return { ...animatedOpacity, ...animatedScale };
   }
 
-  renderItemContainer({ item, index }) {
-    const {
-      data,
-      renderItem,
-      inverted,
-      itemWidth,
-      separatorWidth,
-      itemContainerStyle
-    } = this.props;
-    let marginWidth = index !== data.length - 1 ? separatorWidth : 0;
-    let marginStyle = !!inverted
-      ? { marginLeft: marginWidth }
-      : { marginRight: marginWidth };
+  function getItemMarginStyle(index) {
+    const marginSingleItemSide = itemTotalMarginBothSide / 2;
+    if (isFirstItem(index)) {
+      return !!inverted
+        ? { marginLeft: marginSingleItemSide }
+        : { marginRight: marginSingleItemSide };
+    }
+    if (isLastItem(index)) {
+      return !!inverted
+        ? { marginRight: marginSingleItemSide }
+        : { marginLeft: marginSingleItemSide };
+    }
+    return { marginHorizontal: marginSingleItemSide };
+  }
+
+  function renderItemContainer({ item, index }) {
     return (
       <Animated.View
         pointerEvents={'box-none'}
@@ -176,101 +240,36 @@ class Carousel extends Component {
           styles.itemContainer,
           itemContainerStyle,
           { width: itemWidth },
-          marginStyle,
-          this.itemAnimatedStyles(index)
+          getItemMarginStyle(index),
+          getItemAnimatedStyle(index)
         ]}
       >
         {renderItem({ item, index })}
       </Animated.View>
     );
   }
-  getItemLayout(data, index) {
-    const {itemWidth,separatorWidth}=this.props;
-    return {
-      offset:index * (itemWidth + separatorWidth) +
-          this.halfItemWidth -
-          this.halfContainerWidth,
-      length: itemWidth,
-      index
-    };
-  }
 
-  render() {
-    const {
-      data,
-      bounces,
-      style,
-      itemWidth,
-      containerWidth,
-      initialIndex,
-      keyExtractor,
-      ...otherProps
-    } = this.props;
-    return (
-      <AnimatedFlatList
-        {...otherProps}
-        bounces={bounces}
-        horizontal
-        data={data}
-        decelerationRate={0}
-        automaticallyAdjustContentInsets={false}
-        keyExtractor={keyExtractor}
-        ref={(ref) => (this._scrollView = ref)}
-        renderItem={this.renderItemContainer}
-        style={[styles.container, { width: containerWidth }, style]}
-        showsHorizontalScrollIndicator={false}
-        initialScrollIndex={initialIndex}
-        onScrollBeginDrag={this.handleOnScrollBeginDrag}
-        onScroll={this.handleOnScroll}
-        onScrollEndDrag={this.handleOnScrollEndDrag}
-        getItemLayout={this.getItemLayout}
-        //scrollEnabled//snapToInterval={itemWidth}
-      />
-    );
-  }
+  return (
+    <AnimatedFlatList
+      {...otherProps}
+      ref={scrollViewRef}
+      data={data}
+      style={containerStyle}
+      horizontal={true}
+      inverted={inverted}
+      bounces={bounces}
+      decelerationRate={0}
+      initialScrollIndex={initialIndex}
+      automaticallyAdjustContentInsets={false}
+      showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
+      onScroll={handleOnScrollRef.current}
+      keyExtractor={keyExtractor}
+      getItemLayout={getItemLayout}
+      renderItem={renderItemContainer}
+      onScrollBeginDrag={handleOnScrollBeginDrag}
+      onScrollEndDrag={handleOnScrollEndDrag}
+    />
+  );
 }
 
-Carousel.propTypes = {
-  style: ViewPropTypes.style,
-  bounces: PropTypes.bool,
-  itemWidth: PropTypes.number,
-  separatorWidth: PropTypes.number,
-  containerWidth: PropTypes.number,
-  itemContainerStyle: ViewPropTypes.style,
-  inActiveScale: PropTypes.number,
-  inActiveOpacity: PropTypes.number,
-  keyExtractor: PropTypes.func,
-  renderItem: PropTypes.func,
-  onScrollEnd: PropTypes.func,
-  pagingEnable: PropTypes.bool,
-  initialIndex: PropTypes.number,
-  minScrollDistance: PropTypes.number,
-  onScrollBeginDrag: PropTypes.func,
-  onScrollEndDrag: PropTypes.func,
-  data: PropTypes.arrayOf(PropTypes.object)
-  //itemHeight: PropTypes.number,
-  //containerHeight: PropTypes.number,
-};
-
-Carousel.defaultProps = {
-  inActiveScale: 0.8,
-  inActiveOpacity: 0.8,
-  separatorWidth: 0,
-  containerWidth: width,
-  itemWidth: 0.9 * width,
-  bounces: true,
-  data: [],
-  style: {},
-  initialIndex: 0,
-  pagingEnable: true,
-  minScrollDistance: 25,
-  itemContainerStyle: {},
-  keyExtractor: (item, index) => index.toString(),
-  renderItem: () => {},
-  onScrollEnd: () => {},
-  onScrollBeginDrag: () => {},
-  onScrollEndDrag: () => {}
-  //containerHeight: 200
-  //itemHeight: 0.2 * height - 20,
-};
-export default Carousel;
+export default forwardRef(Carousel);

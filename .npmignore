@@ -1,5 +1,6 @@
 /example
 /node_modules
 /.idea
+/.github
 package-lock.json
 yarn.lock

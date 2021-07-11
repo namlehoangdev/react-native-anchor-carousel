@@ -26,9 +26,9 @@ $ yarn add react-native-anchor-carousel@3.1.2
 
 __**[Expo snack demo here](https://snack.expo.io/@lehoangnamuit/react-native-anchor-carousel)**__
 
-![](https://i.imgur.com/R88RSzq.gif)
-![](https://i.imgur.com/RdqBALz.gif)   
-![](https://i.imgur.com/CI7rOFk.gif)
+![](https://i.imgur.com/FDRMGZS.gif)
+![](https://i.imgur.com/ZPoSTFG.gif)   
+![](https://i.imgur.com/bzRIiTG.gif)
 
 __**[full example here](https://github.com/lehoangnam97/react-native-anchor-carousel/tree/master/example)**__
 

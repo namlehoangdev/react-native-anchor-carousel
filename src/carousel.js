@@ -72,7 +72,7 @@ function Carousel(props, ref) {
     currentIndexRef.current = index;
     setTimeout(() => {
       scrollViewRef.current &&
-        scrollViewRef.current.getNode().scrollToOffset({
+        scrollViewRef.current.scrollToOffset({
           offset:
             index * (itemWidth + separatorWidth) +
             halfItemWidthRef.current -

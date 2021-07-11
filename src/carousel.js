@@ -33,13 +33,14 @@ function Carousel(props, ref) {
     containerWidth = windowWidth,
     itemWidth = 0.9 * windowWidth,
     itemContainerStyle = {},
-    separatorWidth = 0,
+    separatorWidth = 10,
     minScrollDistance = 5,
     inActiveScale = 0.8,
     inActiveOpacity = 0.8,
-    inverted = true,
+    inverted = false,
     initialIndex = 0,
-    bounces = false,
+    bounces = true,
+    showsHorizontalScrollIndicator = false,
     keyExtractor = (item, index) => index.toString(),
     renderItem = () => {},
     onScrollEnd = () => {},
@@ -251,22 +252,22 @@ function Carousel(props, ref) {
   return (
     <AnimatedFlatList
       {...otherProps}
+      ref={scrollViewRef}
+      data={data}
+      style={containerStyle}
+      horizontal={true}
       inverted={inverted}
       bounces={bounces}
-      horizontal={true}
-      data={data}
       decelerationRate={0}
-      automaticallyAdjustContentInsets={false}
-      keyExtractor={keyExtractor}
-      ref={scrollViewRef}
-      renderItem={renderItemContainer}
-      style={containerStyle}
-      showsHorizontalScrollIndicator={false}
       initialScrollIndex={initialIndex}
-      onScrollBeginDrag={handleOnScrollBeginDrag}
+      automaticallyAdjustContentInsets={false}
+      showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
       onScroll={handleOnScrollRef.current}
-      onScrollEndDrag={handleOnScrollEndDrag}
+      keyExtractor={keyExtractor}
       getItemLayout={getItemLayout}
+      renderItem={renderItemContainer}
+      onScrollBeginDrag={handleOnScrollBeginDrag}
+      onScrollEndDrag={handleOnScrollEndDrag}
     />
   );
 }

@@ -6,7 +6,7 @@ import React, {
   useState,
   forwardRef
 } from 'react';
-import { Animated, StyleSheet, Dimensions, FlatList } from 'react-native';
+import { Animated, StyleSheet, Dimensions, FlatList, View } from 'react-native';
 
 const { width: windowWidth } = Dimensions.get('window');
 
@@ -39,6 +39,8 @@ function Carousel(props, ref) {
     inActiveOpacity = 0.8,
     inverted = false,
     initialIndex = 0,
+    autoPlay = false,
+    autoPlayInterval = 4000,
     bounces = true,
     showsHorizontalScrollIndicator = false,
     keyExtractor = (item, index) => index.toString(),
@@ -50,6 +52,7 @@ function Carousel(props, ref) {
   } = props;
   const scrollViewRef = useRef(null);
   const currentIndexRef = useRef(initialIndex);
+  const [isAutoPlay, setIsAutoPlay] = useState(autoPlay);
   const scrollXRef = useRef(0);
   const scrollXBeginRef = useRef(0);
   const xOffsetRef = useRef(new Animated.Value(0));
@@ -59,6 +62,16 @@ function Carousel(props, ref) {
   const itemTotalMarginBothSide = getItemTotalMarginBothSide();
   const containerStyle = [styles.container, { width: containerWidth }, style];
   const dataLength = data ? data.length : 0;
+
+  let interval;
+  useEffect(() => {
+    if (isAutoPlay) {
+      interval = setInterval(() => {
+        generateAutoPlay()
+      }, autoPlayInterval);
+    }
+    return () => clearInterval(interval);
+  }, [isAutoPlay])
 
   useConstructor(() => {
     setScrollHandler();
@@ -111,6 +124,14 @@ function Carousel(props, ref) {
     });
   }
 
+  function generateAutoPlay() {
+    if (currentIndexRef.current === data.length - 1) {
+      scrollToIndex(0)
+    } else {
+      scrollToIndex(currentIndexRef.current + 1)
+    }
+  }
+
   function handleOnScrollBeginDrag() {
     onScrollBeginDrag && onScrollBeginDrag();
     scrollXBeginRef.current = scrollXRef.current;
@@ -132,6 +153,16 @@ function Carousel(props, ref) {
     } else {
       scrollToIndex(currentIndexRef.current + 1);
     }
+  }
+
+  function handleTouchStart() {
+    setIsAutoPlay(false);
+    console.log('begin drag');
+  }
+
+  function handleTouchEnd() {
+    setIsAutoPlay(true);
+    console.log('finish drag');
   }
 
   function getItemTotalMarginBothSide() {
@@ -254,6 +285,8 @@ function Carousel(props, ref) {
       {...otherProps}
       ref={scrollViewRef}
       data={data}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       style={containerStyle}
       horizontal={true}
       inverted={inverted}

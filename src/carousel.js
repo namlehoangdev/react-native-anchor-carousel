@@ -6,7 +6,7 @@ import React, {
   useState,
   forwardRef
 } from 'react';
-import { Animated, StyleSheet, Dimensions, FlatList, View } from 'react-native';
+import { Animated, StyleSheet, Dimensions, FlatList } from 'react-native';
 
 const { width: windowWidth } = Dimensions.get('window');
 
@@ -128,11 +128,9 @@ function Carousel(props, ref) {
   }
 
   function generateAutoPlay() {
-    if (currentIndexRef.current === data.length - 1) {
-      scrollToIndex(0)
-    } else {
-      scrollToIndex(currentIndexRef.current + 1)
-    }
+    scrollToIndex(
+      (currentIndexRef.current + 1) % (data.length - 1)
+    );
   }
 
   function handleOnScrollBeginDrag() {

@@ -128,6 +128,8 @@ From version **4.0.0** it has been moved to *Functional component* and fix separ
 | itemContainerStyle | Style for each carousel container item | View style | {} | No |
 | onScrollEnd |  Fired while scrollview end of scrolling | Function | ()=> {} | No |
 | initialIndex | Initial starting focused item of list | Number | 0 | No |
+| autoPlay | Adds autoplay functionality | Boolean | false | No |
+| autoPlayInterval | Use with autoPlay. Sets the interval of the slides when autoPlay is activated. | Number | 4000 | No |
 
 
  

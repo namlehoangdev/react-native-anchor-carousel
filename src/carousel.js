@@ -39,6 +39,8 @@ function Carousel(props, ref) {
     inActiveOpacity = 0.8,
     inverted = false,
     initialIndex = 0,
+    autoPlay = false,
+    autoPlayInterval = 4000,
     bounces = true,
     showsHorizontalScrollIndicator = false,
     keyExtractor = (item, index) => index.toString(),
@@ -50,6 +52,7 @@ function Carousel(props, ref) {
   } = props;
   const scrollViewRef = useRef(null);
   const currentIndexRef = useRef(initialIndex);
+  const [isAutoPlay, setIsAutoPlay] = useState(autoPlay);
   const scrollXRef = useRef(0);
   const scrollXBeginRef = useRef(0);
   const xOffsetRef = useRef(new Animated.Value(0));
@@ -59,6 +62,19 @@ function Carousel(props, ref) {
   const itemTotalMarginBothSide = getItemTotalMarginBothSide();
   const containerStyle = [styles.container, { width: containerWidth }, style];
   const dataLength = data ? data.length : 0;
+
+  let interval;
+  useEffect(() => {
+    if (!isAutoPlay) {
+      return;
+    }
+    interval = setInterval(() => {
+      generateAutoPlay()
+    }, autoPlayInterval);
+    return () => {
+      clearInterval(interval);
+    }
+  }, [isAutoPlay])
 
   useConstructor(() => {
     setScrollHandler();
@@ -111,6 +127,12 @@ function Carousel(props, ref) {
     });
   }
 
+  function generateAutoPlay() {
+    scrollToIndex(
+      (currentIndexRef.current + 1) % (data.length - 1)
+    );
+  }
+
   function handleOnScrollBeginDrag() {
     onScrollBeginDrag && onScrollBeginDrag();
     scrollXBeginRef.current = scrollXRef.current;
@@ -132,6 +154,14 @@ function Carousel(props, ref) {
     } else {
       scrollToIndex(currentIndexRef.current + 1);
     }
+  }
+
+  function handleTouchStart() {
+    setIsAutoPlay(false);
+  }
+
+  function handleTouchEnd() {
+    setIsAutoPlay(true);
   }
 
   function getItemTotalMarginBothSide() {
@@ -254,6 +284,8 @@ function Carousel(props, ref) {
       {...otherProps}
       ref={scrollViewRef}
       data={data}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       style={containerStyle}
       horizontal={true}
       inverted={inverted}

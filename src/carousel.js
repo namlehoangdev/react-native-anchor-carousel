@@ -65,12 +65,15 @@ function Carousel(props, ref) {
 
   let interval;
   useEffect(() => {
-    if (isAutoPlay) {
-      interval = setInterval(() => {
-        generateAutoPlay()
-      }, autoPlayInterval);
+    if (!isAutoPlay) {
+      return;
     }
-    return () => clearInterval(interval);
+    interval = setInterval(() => {
+      generateAutoPlay()
+    }, autoPlayInterval);
+    return () => {
+      clearInterval(interval);
+    }
   }, [isAutoPlay])
 
   useConstructor(() => {

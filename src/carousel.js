@@ -157,12 +157,10 @@ function Carousel(props, ref) {
 
   function handleTouchStart() {
     setIsAutoPlay(false);
-    console.log('begin drag');
   }
 
   function handleTouchEnd() {
     setIsAutoPlay(true);
-    console.log('finish drag');
   }
 
   function getItemTotalMarginBothSide() {
